@@ -3,26 +3,25 @@ import React, { useEffect, useState } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import Confetti from 'react-confetti'
 import Image from 'next/image'
+import Modal from '../components/modal/index'
 
 export default function Home() {
   const [moveCount, setMoveCount] = useState(0)
   const [confettiActive, setConfettiActive] = useState(false)
   const [path, setPath] = useState('')
   const [gifActive, setGifActive] = useState(false)
-  const [activeBtn, setActiveBtn] = useState(true)
+  const [activeBtn, setActiveBtn] = useState(false)
+  const [activeModal, setActiveModal] = useState(false)
 
-  // // Obtém o centro da tela
-  // const centerX = window.innerWidth / 2
-  // const centerY = window.innerHeight / 2
-
-  // // Define a posição inicial no centro da tela para o botão "Não"
-  // const [position, setPosition] = useState({ x: centerX, y: centerY })
-
-  const [position, setPosition] = useState({ x: 525, y: 192 })
+  // const [position, setPosition] = useState({ x: 525, y: 192 })
+  const [position, setPosition] = useState({
+    x: 0,
+    y: 0,
+  })
 
   const moveButton = () => {
     // Obtém as dimensões da janela do navegador
-    const windowWidth = window.innerWidth
+    const windowWidth = window.innerWidth / 2
     const windowHeight = window.innerHeight
 
     // Obtém as dimensões do botão
@@ -73,44 +72,56 @@ export default function Home() {
     setConfettiActive(true)
     setTimeout(() => {
       setConfettiActive(false)
+      setActiveModal(true)
     }, 5000) // Tempo em milissegundos para manter o efeito de confete
   }
 
   return (
-    <main className="flex h-screen flex-col items-center bg-pink-300 relative">
+    <>
       {confettiActive && <Confetti />}
-      <div className="flex flex-col items-center justify-center bg-white w-1/2 h-auto mt-16 p-5 drop-shadow-2xl rounded-md">
-        {gifActive && (
-          <div className="my-10">
-            <Image
-              src={path}
-              alt="gif-aleatório"
-              width={100}
-              height={100}
-              className="size-[200px]"
-            />
-          </div>
-        )}
-        <h1 className="my-10 text-zinc-900 text-xl">main</h1>
-
-        <div className="mt-16 flex ">
-          {activeBtn && (
-            <button
-              className="border-blue-500 border-2 rounded-md p-2 text-blue-500 hover:bg-blue-500 hover:text-white text-2xl"
-              onClick={handleClick}
-            >
-              SIM
-            </button>
+      <div className="flex h-screen flex-col items-center bg-pink-300 px-3">
+        <div className="flex flex-col items-center justify-center bg-white w-1/2 h-auto mt-16 p-5 drop-shadow-2xl rounded-md">
+          {gifActive && (
+            <div className="my-10">
+              <Image
+                src={path}
+                alt="gif-aleatório"
+                width={100}
+                height={100}
+                className="size-[200px]"
+              />
+            </div>
           )}
-          <animated.button
-            className="absolute border-pink-500 border-2 rounded-md p-2  text-pink-500 text-2xl"
-            style={{ ...springProps, transition: 'all 300ms ease-in-out' }}
-            onMouseOver={moveButton}
-          >
-            Não
-          </animated.button>
+          <h1 className="my-10 text-zinc-900 text-xl">main</h1>
+
+          <div className="mt-16 flex">
+            {activeBtn && (
+              <button
+                className="border-blue-500 border-2 rounded-md p-2 text-blue-500 hover:bg-blue-500 hover:text-white text-2xl "
+                onClick={handleClick}
+              >
+                SIM
+              </button>
+            )}
+            <animated.button
+              className="absolute border-pink-500 border-2 rounded-md p-2 text-pink-500 hover:bg-pink-500 hover:text-white text-2xl"
+              style={{ ...springProps, transition: 'all 300ms ease-in-out' }}
+              onMouseOver={moveButton}
+              onTouchStart={moveButton}
+            >
+              Não
+            </animated.button>
+          </div>
         </div>
       </div>
-    </main>
+      <Modal
+        isOpen={activeModal}
+        onClose={() => setActiveModal(!activeModal)}
+        title="Parabéns"
+        txtBtn="Concluir"
+      >
+        <h1 className="text-black">Parabéns</h1>
+      </Modal>
+    </>
   )
 }
