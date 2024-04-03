@@ -94,6 +94,8 @@ export default function Home() {
       setMsg('')
       setActiveModal(false)
       toast.success('Sucesso ao Enviar sua resposta ao pedido!')
+    } else {
+      toast.error('Erro ao Enviar sua resposta ao pedido!')
     }
   }
   return (
