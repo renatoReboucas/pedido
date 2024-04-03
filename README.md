@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+```js
+{
+  /* <button
+            className=" border-pink-500 border-2 rounded-md z-10 p-2 text-pink-500 hover:bg-pink-500 hover:text-white text-2xl transition duration-300 ease-in-out"
+            // style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+            style={{ position: 'absolute', left: position.x, top: position.y }}
+            onMouseOver={moveButton}
+          >
+            NÃO
+          </button> */
+}
+```

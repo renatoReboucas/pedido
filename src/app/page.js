@@ -1,113 +1,116 @@
-import Image from "next/image";
+'use client'
+import React, { useEffect, useState } from 'react'
+import { useSpring, animated } from '@react-spring/web'
+import Confetti from 'react-confetti'
+import Image from 'next/image'
 
 export default function Home() {
+  const [moveCount, setMoveCount] = useState(0)
+  const [confettiActive, setConfettiActive] = useState(false)
+  const [path, setPath] = useState('')
+  const [gifActive, setGifActive] = useState(false)
+  const [activeBtn, setActiveBtn] = useState(true)
+
+  // // Obtém o centro da tela
+  // const centerX = window.innerWidth / 2
+  // const centerY = window.innerHeight / 2
+
+  // // Define a posição inicial no centro da tela para o botão "Não"
+  // const [position, setPosition] = useState({ x: centerX, y: centerY })
+
+  const [position, setPosition] = useState({ x: 525, y: 192 })
+
+  const moveButton = () => {
+    // Obtém as dimensões da janela do navegador
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+
+    // Obtém as dimensões do botão
+    const buttonWidth = 100 // Largura do botão
+    const buttonHeight = 40 // Altura do botão
+
+    // Calcula as coordenadas máximas levando em consideração a posição atual do botão
+    const maxX = windowWidth - buttonWidth
+    const maxY = windowHeight - buttonHeight
+
+    // Calcula as coordenadas aleatórias dentro dos limites da tela visível
+    const randomX = Math.floor(Math.random() * (windowWidth - buttonWidth))
+    const randomY = Math.floor(Math.random() * (windowHeight - buttonHeight))
+
+    // Define a nova posição do botão, garantindo que esteja dentro dos limites da tela visível
+    setPosition({
+      x: Math.max(0, Math.min(randomX, maxX)),
+      y: Math.max(0, Math.min(randomY, maxY)),
+    })
+    setMoveCount(moveCount + 1)
+  }
+
+  useEffect(() => {
+    setGifActive(false)
+    const pathImageArray = [
+      '/cat.gif',
+      '/bu_moster_sa.gif',
+      '/sad_stitch.gif',
+      '/picachu.gif',
+    ]
+    if (moveCount > 2) {
+      const indiceAleatorio = Math.floor(Math.random() * pathImageArray.length)
+      const caminhoAleatorio = pathImageArray[indiceAleatorio]
+      setActiveBtn(true)
+      setPath(caminhoAleatorio)
+      setGifActive(true)
+    }
+  }, [moveCount])
+
+  // Define a animação usando useSpring
+  const springProps = useSpring({
+    left: position.x,
+    top: position.y,
+    config: { duration: 300 }, // Configuração de duração da transição
+  })
+
+  const handleClick = () => {
+    setConfettiActive(true)
+    setTimeout(() => {
+      setConfettiActive(false)
+    }, 5000) // Tempo em milissegundos para manter o efeito de confete
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
+    <main className="flex h-screen flex-col items-center bg-pink-300 relative">
+      {confettiActive && <Confetti />}
+      <div className="flex flex-col items-center justify-center bg-white w-1/2 h-auto mt-16 p-5 drop-shadow-2xl rounded-md">
+        {gifActive && (
+          <div className="my-10">
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
+              src={path}
+              alt="gif-aleatório"
               width={100}
-              height={24}
-              priority
+              height={100}
+              className="size-[200px]"
             />
-          </a>
+          </div>
+        )}
+        <h1 className="my-10 text-zinc-900 text-xl">main</h1>
+
+        <div className="mt-16 flex ">
+          {activeBtn && (
+            <button
+              className="border-blue-500 border-2 rounded-md p-2 text-blue-500 hover:bg-blue-500 hover:text-white text-2xl"
+              onClick={handleClick}
+            >
+              SIM
+            </button>
+          )}
+          <animated.button
+            className="absolute border-pink-500 border-2 rounded-md p-2  text-pink-500 text-2xl"
+            style={{ ...springProps, transition: 'all 300ms ease-in-out' }}
+            onMouseOver={moveButton}
+          >
+            Não
+          </animated.button>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
     </main>
-  );
+  )
 }
