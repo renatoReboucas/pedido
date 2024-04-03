@@ -5,6 +5,9 @@ import Confetti from 'react-confetti'
 import Image from 'next/image'
 import Modal from '../components/modal/index'
 
+import 'react-toastify/dist/ReactToastify.css'
+import { toast, ToastContainer } from 'react-toastify'
+
 export default function Home() {
   const [moveCount, setMoveCount] = useState(0)
   const [confettiActive, setConfettiActive] = useState(false)
@@ -12,6 +15,7 @@ export default function Home() {
   const [gifActive, setGifActive] = useState(false)
   const [activeBtn, setActiveBtn] = useState(false)
   const [activeModal, setActiveModal] = useState(false)
+  const [msg, setMsg] = useState('')
 
   // const [position, setPosition] = useState({ x: 525, y: 192 })
   const [position, setPosition] = useState({
@@ -75,7 +79,23 @@ export default function Home() {
       setActiveModal(true)
     }, 5000) // Tempo em milissegundos para manter o efeito de confete
   }
-
+  const handleResponse = async () => {
+    const response = await fetch('api/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        resposta: true,
+        msg: msg,
+      }),
+    })
+    if (response.status === 200) {
+      setMsg('')
+      setActiveModal(false)
+      toast.success('Sucesso ao Enviar sua resposta ao pedido!')
+    }
+  }
   return (
     <>
       {confettiActive && <Confetti />}
@@ -92,7 +112,13 @@ export default function Home() {
               />
             </div>
           )}
-          <h1 className="my-10 text-zinc-900 text-xl">main</h1>
+          <p className="my-10 text-red-500 text-lg">Prezada Beatriz Kodama,</p>
+          <p className=" text-red-500 text-lg">
+            Espero que esta mensagem a encontre bem. Gostaria de expressar meu
+            interesse em compartilhar minha vida ao seu lado e consequentemente,
+            dedicar-me a proporcionar-lhe felicidade ao longo de nossos dias
+            juntos.
+          </p>
 
           <div className="mt-16 flex">
             {activeBtn && (
@@ -117,11 +143,26 @@ export default function Home() {
       <Modal
         isOpen={activeModal}
         onClose={() => setActiveModal(!activeModal)}
-        title="Parabéns"
-        txtBtn="Concluir"
+        onSubmit={handleResponse}
+        title="Parabéns você acaba de tomar a melhor decisão da sua vida!"
+        txtBtn="Enviar"
       >
-        <h1 className="text-black">Parabéns</h1>
+        <label className="block mb-2 text-sm font-medium text-gray-900">
+          Deseja enviar uma mensagem para Renato?
+        </label>
+        <textarea
+          value={msg}
+          onChange={(e) => setMsg(e.target.value)}
+          rows="4"
+          className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+        ></textarea>
       </Modal>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        pauseOnFocusLoss
+        theme="colored"
+      />
     </>
   )
 }
